@@ -1,9 +1,7 @@
-import numpy as np
 import gradio as gr
 
 import torch
 import clip
-import pandas as pd
 import os
 from PIL import Image
 from IPython.display import display
@@ -12,7 +10,7 @@ from tqdm.notebook import tqdm
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model, preprocess = clip.load("ViT-B/32", device=device)
 
-data_location =  "./imgs"
+data_location =  "./text_imgs"
 img_dict = {}
 for inx, f in enumerate(os.listdir(data_location)):
   img_dict[inx] = f
@@ -44,5 +42,13 @@ def fn(instr):
   retval = [ f'{data_location}/{img_dict[res[i][0]]}' for i in range(3) ]
   return retval
 
-demo = gr.Interface(fn, 'text', [gr.Image(type='file', label=None) for _ in range(3)])
-demo.launch()
+# css_output = ".output-image, .input-image, .image-preview {height: 100px !important}"
+css_output = ".object-contain {height: 100px !important}"
+
+demo = gr.Interface(
+  fn = fn,
+  inputs = 'text', 
+  outputs = [gr.Image(type='file', label=None) for _ in range(3)],
+  css = css_output,
+)
+demo.launch(enable_queue = True,)
